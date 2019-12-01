@@ -1,4 +1,4 @@
 solve:
-	cat input | go run main.go
+	go run main.go < input
 test:
 	go test -v
