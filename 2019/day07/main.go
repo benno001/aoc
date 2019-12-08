@@ -19,7 +19,7 @@ func check(e error) {
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		
+
 		if err := scanner.Err(); err != nil {
 			fmt.Fprintln(os.Stderr, "error:", err)
 			os.Exit(1)
@@ -30,8 +30,8 @@ func main() {
 	}
 }
 
-func part1(intcodes []int){
-	comb := getCombinations([]int{0,1,2,3,4})
+func part1(intcodes []int) {
+	comb := getCombinations([]int{0, 1, 2, 3, 4})
 	var max int
 	for _, c := range comb {
 		res := runAmplifierSetup(intcodes, c)
@@ -43,7 +43,7 @@ func part1(intcodes []int){
 }
 
 func part2(intcodes []int) {
-	comb := getCombinations([]int{5,6,7,8,9})
+	comb := getCombinations([]int{5, 6, 7, 8, 9})
 	max := 0
 	for _, c := range comb {
 		res := runFeedBackAmplifierSetup(intcodes, c)
@@ -55,7 +55,7 @@ func part2(intcodes []int) {
 }
 
 func runAmplifierSetup(intcodes []int, phases []int) int {
-	amplifiers := []string{"A","B","C","D","E"}
+	amplifiers := []string{"A", "B", "C", "D", "E"}
 	var thrusterResult int
 	var err error
 	for i, amp := range amplifiers {
@@ -107,31 +107,31 @@ func copiedInstructions(intcodes []int) []int {
 }
 
 func getCombinations(arr []int) [][]int {
-    var helper func([]int, int)
-    res := [][]int{}
+	var helper func([]int, int)
+	res := [][]int{}
 
-    helper = func(arr []int, n int) {
-        if n == 1 {
-            tmp := make([]int, len(arr))
-            copy(tmp, arr)
-            res = append(res, tmp)
-        } else {
-            for i := 0; i < n; i++ {
-                helper(arr, n-1)
-                if n%2 == 1 {
-                    tmp := arr[i]
-                    arr[i] = arr[n-1]
-                    arr[n-1] = tmp
-                } else {
-                    tmp := arr[0]
-                    arr[0] = arr[n-1]
-                    arr[n-1] = tmp
-                }
-            }
-        }
-    }
-    helper(arr, len(arr))
-    return res
+	helper = func(arr []int, n int) {
+		if n == 1 {
+			tmp := make([]int, len(arr))
+			copy(tmp, arr)
+			res = append(res, tmp)
+		} else {
+			for i := 0; i < n; i++ {
+				helper(arr, n-1)
+				if n%2 == 1 {
+					tmp := arr[i]
+					arr[i] = arr[n-1]
+					arr[n-1] = tmp
+				} else {
+					tmp := arr[0]
+					arr[0] = arr[n-1]
+					arr[n-1] = tmp
+				}
+			}
+		}
+	}
+	helper(arr, len(arr))
+	return res
 }
 
 func parseProgram(input string) ([]int, error) {
@@ -193,7 +193,7 @@ func processOpcodes(intcodes []int, phase int, input int) (int, error) {
 			if firstInput {
 				processOpcodeThree(intcodes, numberOne, phase)
 				firstInput = false
-				} else {
+			} else {
 				processOpcodeThree(intcodes, numberOne, input)
 			}
 			increase = 2
@@ -243,11 +243,11 @@ func processOpcodes(intcodes []int, phase int, input int) (int, error) {
 
 func processInstruction(instruction int) (int, bool, bool) {
 	instr := strconv.Itoa(instruction)
-	e, err := strconv.Atoi(string(instr[len(instr) -1]))
+	e, err := strconv.Atoi(string(instr[len(instr)-1]))
 	check(err)
 	if len(instr) < 3 {
 		if e == 9 {
-			e2, err := strconv.Atoi(string(instr[len(instr) -2]))
+			e2, err := strconv.Atoi(string(instr[len(instr)-2]))
 			check(err)
 			if e2 == 9 {
 				return 99, false, false
@@ -256,11 +256,11 @@ func processInstruction(instruction int) (int, bool, bool) {
 			return e, false, false
 		}
 	}
-	modeOne, err := strconv.Atoi(string(instr[len(instr) -3]))
+	modeOne, err := strconv.Atoi(string(instr[len(instr)-3]))
 	check(err)
 	modeTwo := 0
 	if len(instr) == 4 {
-		modeTwo, err = strconv.Atoi(string(instr[len(instr) -4]))
+		modeTwo, err = strconv.Atoi(string(instr[len(instr)-4]))
 		check(err)
 		return e, modeOne == 1, modeTwo == 1
 	}
@@ -359,7 +359,7 @@ func processOpcodesFeedBack(codes []int, inChan <-chan int, outChan chan<- int) 
 		}
 		if instruction == 3 {
 			numberOne = intcodes[position+1]
-			input := <- inChan
+			input := <-inChan
 			processOpcodeThree(intcodes, numberOne, input)
 			increase = 2
 		}
