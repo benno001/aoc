@@ -84,6 +84,7 @@ func TestProcessOpcodeThree(t *testing.T) {
 	}{
 		{[]int{3, 3, 2, 1}, 3, 50, []int{3, 3, 2, 50}},
 		{[]int{3, 3, 2, 1}, 3, 50, []int{3, 3, 2, 50}},
+		{[]int{103, 3, 2, 1}, 3, 50, []int{103, 3, 2, 50}},
 	}
 
 	for _, table := range tables {
