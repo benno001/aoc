@@ -105,15 +105,15 @@ func processOpcodes(intcodes []int, input int) ([][]int,[][]int) {
 	increase := 4
 	var outputs [][]int
 	// var painted [][]int
-	painted := make([][]int, 100)
+	painted := make([][]int, 50)
 	for i := range painted {
-		painted[i] = make([]int, 100)
+		painted[i] = make([]int, 50)
 	}
-	hull := make([][]int, 100)
+	hull := make([][]int, 6)
 	for i := range hull {
-		hull[i] = make([]int, 100)
+		hull[i] = make([]int, 45)
 	}
-	currentPosition := paintPosition{50,50}
+	currentPosition := paintPosition{0,0}
 	hull[currentPosition.y][currentPosition.x] = 1
 	direction := 90
 	for position := 0; position < len(intcodes); position += increase {
