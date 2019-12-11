@@ -61,8 +61,8 @@ func TestMove(t *testing.T) {
 		newPosition   paintPosition
 		newDirection int
 	}{
-		{0, 0, paintPosition{500,500}, paintPosition{500, 501}, 90},
-		{1, 0, paintPosition{500,500}, paintPosition{500, 499}, 270},
+		{0, 0, paintPosition{500,500}, paintPosition{500, 499}, 90},
+		{1, 0, paintPosition{500,500}, paintPosition{500, 501}, 270},
 		{0, 90, paintPosition{500,500}, paintPosition{499, 500}, 180},
 		{1, 90, paintPosition{500,500}, paintPosition{501, 500}, 0},
 	}

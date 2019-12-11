@@ -87,13 +87,13 @@ func move(output int, currentDirection int, currentPosition paintPosition) (newP
 		xCur++
 	}
 	if newDirection == 90 {
-		yCur++
+		yCur--
 	}
 	if newDirection == 180 {
 		xCur--
 	}
 	if newDirection == 270 {
-		yCur--
+		yCur++
 	}
 	newPosition = paintPosition{x: xCur, y: yCur}
 	fmt.Println(newPosition)
