@@ -135,7 +135,7 @@ func scanShip(intcodes []int) (x int, y int) {
 			}
 		}
 	}
-	visualizePartialGrid(grid, []int{x-200,x+200}, []int{y-200,y+200})
+	// visualizePartialGrid(grid, []int{x-200,x+200}, []int{y-200,y+200})
 	return 0, 0
 }
 
