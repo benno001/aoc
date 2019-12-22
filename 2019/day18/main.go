@@ -29,12 +29,48 @@ func main() {
 			os.Exit(1)
 		}
 	}
-	grid := parseInput(input)
-	g, keys, doors := createGraph(grid)
-	visualizeGrid(grid)
-	precomp := precomputeDistances(g, keys)
-	minSteps := distanceToCollectKeys(g, "@", keys, make(map[[32]byte]int), doors, precomp)
-	fmt.Println("Answer part 1:", minSteps)
+	// grid := parseInput(input)
+	// g, keys, doors := createGraph(grid)
+	// visualizeGrid(grid)
+	// precomp := precomputeDistances(g, keys)
+	// minSteps := distanceToCollectKeys(g, "@", keys, make(map[[32]byte]int), doors, precomp, 0)
+	// fmt.Println("Answer part 1:", minSteps)
+
+	q1, q2, q3, q4 := parseQuadrants(input)
+	visualizeGrid(q1)
+	visualizeGrid(q2)
+	visualizeGrid(q3)
+	visualizeGrid(q4)
+	g1, k1, d1 := createGraph(q1)
+	removeIrrelevantDoors(k1, d1)
+	precomp1 := precomputeDistances(g1, k1)
+	minSteps1 := distanceToCollectKeys(g1, "@", k1, make(map[[32]byte]int), d1, precomp1, 0)
+
+	g2, k2, d2 := createGraph(q2)
+	removeIrrelevantDoors(k2, d2)
+	precomp2 := precomputeDistances(g2, k2)
+	minSteps2 := distanceToCollectKeys(g2, "@", k2, make(map[[32]byte]int), d2, precomp2, 0)
+
+	g3, k3, d3 := createGraph(q3)
+	removeIrrelevantDoors(k3, d3)
+	precomp3 := precomputeDistances(g3, k3)
+	minSteps3 := distanceToCollectKeys(g3, "@", k3, make(map[[32]byte]int), d3, precomp3, 0)
+
+	g4, k4, d4 := createGraph(q4)
+	removeIrrelevantDoors(k4, d4)
+	precomp4 := precomputeDistances(g4, k4)
+	minSteps4 := distanceToCollectKeys(g4, "@", k4, make(map[[32]byte]int), d4, precomp4, 0)
+
+	fmt.Println("Answer part 2:", minSteps1+minSteps2+minSteps3+minSteps4)
+
+}
+
+func removeIrrelevantDoors(keys map[string]int, doors map[string]int) {
+	for d := range doors {
+		if _, ok := keys[strings.ToUpper(d)]; !ok {
+			delete(doors, d)
+		}
+	}
 }
 
 func parseInput(input []string) (grid [][]string) {
@@ -49,6 +85,37 @@ func parseInput(input []string) (grid [][]string) {
 		}
 	}
 	return grid
+}
+
+func parseQuadrants(input []string) (quadrant1 [][]string, quadrant2 [][]string, quadrant3 [][]string, quadrant4 [][]string) {
+	quadrant1 = make([][]string, len(input))
+	quadrant2 = make([][]string, len(input))
+	quadrant3 = make([][]string, len(input))
+	quadrant4 = make([][]string, len(input))
+	for i := range quadrant1 {
+		quadrant1[i] = make([]string, len(input))
+		quadrant2[i] = make([]string, len(input))
+		quadrant3[i] = make([]string, len(input))
+		quadrant4[i] = make([]string, len(input))
+	}
+	for i, row := range input {
+		for j, char := range row {
+			c := string(char)
+			if i < len(input)/2 && j < len(input[i])/2 {
+				quadrant1[i][j] = c
+			}
+			if i < len(input)/2 && j >= len(input[i])/2 {
+				quadrant2[i][j] = c
+			}
+			if i >= len(input)/2 && j < len(input[i])/2 {
+				quadrant3[i][j] = c
+			}
+			if i >= len(input)/2 && j >= len(input[i])/2 {
+				quadrant4[i][j] = c
+			}
+		}
+	}
+	return quadrant1, quadrant2, quadrant3, quadrant4
 }
 
 func visualizeGrid(grid [][]string) {
@@ -66,7 +133,7 @@ func createGraph(grid [][]string) (g *graph.Graph, keys map[string]int, doors ma
 	g = graph.New(verticeAmount)
 	for i, row := range grid {
 		for j, cell := range row {
-			if cell != "#" {
+			if cell != "#" && cell != " " && cell != "" {
 				if cell != "." {
 					pos := i*size + j
 					// If the cell is an item, also add it to the map
@@ -106,7 +173,7 @@ func createGraph(grid [][]string) (g *graph.Graph, keys map[string]int, doors ma
 }
 
 func traverseMaze(g *graph.Graph, doors map[string]int, keys map[string]int, precomputedDistances map[[32]byte]precomputedDistance) int {
-	return distanceToCollectKeys(g, "@", keys, make(map[[32]byte]int), doors, precomputedDistances)
+	return distanceToCollectKeys(g, "@", keys, make(map[[32]byte]int), doors, precomputedDistances, 0)
 }
 
 func getPossibleKeys(g *graph.Graph, player int, keys map[string]int, doors map[string]int) map[string]int {
@@ -176,7 +243,7 @@ func keysInPath(keys map[string]int, path []int) map[string]int {
 	return keysInPath
 }
 
-func distanceToCollectKeys(g *graph.Graph, currentKey string, newKeys map[string]int, cache map[[32]byte]int, newDoors map[string]int, precomputedDistances map[[32]byte]precomputedDistance) int {
+func distanceToCollectKeys(g *graph.Graph, currentKey string, newKeys map[string]int, cache map[[32]byte]int, newDoors map[string]int, precomputedDistances map[[32]byte]precomputedDistance, depth int) int {
 	keys := make(map[string]int)
 	for k, v := range newKeys {
 		keys[k] = v
@@ -215,8 +282,17 @@ func distanceToCollectKeys(g *graph.Graph, currentKey string, newKeys map[string
 		return 0
 	}
 
-	for key := range k {
-		delete(doors, strings.ToUpper(key))
+	j := 0
+	newKeyList := make([]string, len(k))
+	for newKey := range k {
+		newKeyList[j] = newKey
+		j++
+	}
+	sort.Strings(newKeyList)
+	// fmt.Println(newKeyList)
+
+	for _, key := range newKeyList {
+		// delete(doors, strings.ToUpper(key))
 		nKeys := make(map[string]int)
 		for a, v := range keys {
 			nKeys[a] = v
@@ -236,9 +312,9 @@ func distanceToCollectKeys(g *graph.Graph, currentKey string, newKeys map[string
 			delete(nDoors, strings.ToUpper(kip))
 		}
 
-		fmt.Println("dist for", currentKey, key, precomp.dist, k)
+		fmt.Println(strings.Repeat("  ", depth), currentKey, key, precomp.dist, k, nDoors)
 		// delete(nKeys, key)
-		distance := precomp.dist + distanceToCollectKeys(g, key, nKeys, cache, nDoors, precomputedDistances)
+		distance := precomp.dist + distanceToCollectKeys(g, key, nKeys, cache, nDoors, precomputedDistances, depth+1)
 		if distance < minSteps {
 			minSteps = distance
 			// fmt.Println(minSteps)
